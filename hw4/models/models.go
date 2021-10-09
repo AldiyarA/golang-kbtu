@@ -19,7 +19,7 @@ type Factory struct {
 }
 
 type Factory2 struct {
-	Factory `json:"-"`
+	Factory `json:""`
 	Name    string `json:"name"`
 	In      []int  `json:"in"`
 	NeedIn  []int  `json:"-"`

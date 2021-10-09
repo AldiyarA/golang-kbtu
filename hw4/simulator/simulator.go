@@ -21,13 +21,18 @@ func NewWorker(duration, outIndex, power int, in *models.Factory, out *models.Fa
 	return models.Worker{Duration: duration, In: in, Out: out, OutIndex: outIndex, Power: power}
 }
 
-type All struct {
-	Factories  []models.Factory  `json:"production"`
-	Factories2 []models.Factory2 `json:"usage"`
-	Workers    []models.Worker   `json:"workers"`
-}
+var workers []models.Runable
+var factories []models.Runable
 
-var all All
+var (
+	f1 = NewFactory("Ore mine", 1, 3)
+	f2 = NewFactory2("Smelting factory", 1, 3, []int{2})
+	f3 = NewFactory("Wood factory", 1, 2)
+	f4 = NewFactory2("Tool Factory", 1, 5, []int{3, 2})
+	w1 = NewWorker(5, 0, 3, &f1, &f2)
+	w2 = NewWorker(5, 0, 3, &f2.Factory, &f4)
+	w3 = NewWorker(5, 1, 3, &f3, &f4)
+)
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage!")
@@ -35,28 +40,37 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func handleRequests() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/all", returnAll)
+	http.HandleFunc("/workers", returnWorkers)
+	http.HandleFunc("/factories", returnFactories)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
+func returnWorkers(w http.ResponseWriter, r *http.Request) {
+	for _, r := range workers {
+		json.NewEncoder(w).Encode(r)
+	}
+}
+func returnFactories(w http.ResponseWriter, r *http.Request) {
+	for _, r := range factories {
+		json.NewEncoder(w).Encode(r)
+	}
+}
 func returnAll(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(all)
+	returnWorkers(w, r)
+	returnFactories(w, r)
+}
+func runAll() {
+	for _, r := range workers {
+		go r.Run()
+	}
+	for _, r := range factories {
+		go r.Run()
+	}
 }
 func Simulate() {
-	f1 := NewFactory("Ore mine", 1, 3)
-	f2 := NewFactory2("Smelting factory", 1, 3, []int{2})
-	f3 := NewFactory("Wood factory", 1, 2)
-	f4 := NewFactory2("Tool Factory", 1, 5, []int{3, 2})
-	w1 := NewWorker(5, 0, 3, &f1, &f2)
-	w2 := NewWorker(5, 0, 3, &f2.Factory, &f4)
-	w3 := NewWorker(5, 1, 3, &f3, &f4)
 	go handleRequests()
-	go f1.Run()
-	go f2.Run()
-	go f3.Run()
-	go f4.Run()
-	go w1.Run()
-	go w2.Run()
-	go w3.Run()
-	all = All{Factories: []models.Factory{f1, f2.Factory, f3, f4.Factory}, Factories2: []models.Factory2{f2, f4}, Workers: []models.Worker{w1, w2, w3}}
+	workers = []models.Runable{&w1, &w2, &w3}
+	factories = []models.Runable{&f1, &f2, &f3, &f4}
+	runAll()
 	tick := time.NewTicker(1 * time.Second)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
