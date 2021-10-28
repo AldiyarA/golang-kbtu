@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package api;
+option go_package = "hw7/api";
+
+message Empty{}
+
+message Id{
+  int64 id = 1;
+}
+
+message User{
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  string firstname = 5;
+  string lastname = 6;
+}
+
+message Users{
+  repeated User users = 1;
+}
+
+service UserService{
+  rpc All(Empty) returns (Users);
+  rpc Get(Id) returns (User);
+  rpc Create(User) returns(Empty);
+  rpc Update(User) returns(Empty);
+  rpc Delete(Id) returns(Empty);
+}
+
+message Computer{
+  int64 id = 1;
+  string name = 2;
+  string series = 3;
+  string brand = 4;
+  string screen_size = 5;
+  string operating_system = 6;
+  string color = 7;
+  string hard_disk_size = 8;
+  string solid_disk_size = 9;
+  int64 processor_count = 10;
+  float price = 11;
+}
+
+message Computers{
+  repeated Computer computers = 1;
+}
+
+service ComputerService{
+  rpc All(Empty) returns (Computers);
+  rpc Get(Id) returns (Computer);
+  rpc Create(Computer) returns(Empty);
+  rpc Update(Computer) returns(Empty);
+  rpc Delete(Id) returns(Empty);
+}
+
+message Phone{
+  int64 id = 1;
+  string name = 2;
+  string brand = 3;
+  string color = 4;
+  string memory = 5;
+  string RAM = 6;
+  float price = 7;
+}
+
+message Phones{
+  repeated Phone phones = 1;
+}
+
+service PhoneService{
+  rpc All(Empty) returns (Phones);
+  rpc Get(Id) returns (Phone);
+  rpc Create(Phone) returns(Empty);
+  rpc Update(Phone) returns(Empty);
+  rpc Delete(Id) returns(Empty);
+}
