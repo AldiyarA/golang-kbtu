@@ -9,9 +9,10 @@ import (
 )
 
 type DB struct {
-	users api.UserServiceServer
-	electronicsRepo store.ElectronicsRepository
-	mu *sync.RWMutex
+	users       api.UserServiceServer
+	electronics store.ElectronicsRepository
+	tools		store.ToolsRepository
+	mu          *sync.RWMutex
 }
 
 func NewDB() store.Store {
@@ -21,10 +22,10 @@ func NewDB() store.Store {
 }
 
 func (db *DB) Electronics() store.ElectronicsRepository {
-	if db.electronicsRepo == nil{
-		db.electronicsRepo = electronics.NewElectronicsRepo()
+	if db.electronics == nil{
+		db.electronics = electronics.NewElectronicsRepo()
 	}
-	return db.electronicsRepo
+	return db.electronics
 }
 func (db *DB) Users() api.UserServiceServer {
 	if db.users == nil{
@@ -34,4 +35,7 @@ func (db *DB) Users() api.UserServiceServer {
 		}
 	}
 	return db.users
+}
+func (db *DB) Tools() store.ToolsRepository{
+	return db.tools
 }

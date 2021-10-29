@@ -6,17 +6,17 @@ import (
 	"sync"
 )
 
-type ElectronicsRepo struct {
+type Electronics struct {
 	computers api.ComputerServiceServer
 	phones api.PhoneServiceServer
 	mu *sync.RWMutex
 }
 
 func NewElectronicsRepo() store.ElectronicsRepository {
-	return &ElectronicsRepo{mu: new(sync.RWMutex)}
+	return &Electronics{mu: new(sync.RWMutex)}
 }
 
-func (e *ElectronicsRepo) Computers() api.ComputerServiceServer {
+func (e *Electronics) Computers() api.ComputerServiceServer {
 	if e.computers == nil{
 		e.computers = &ComputerRepo{
 			data: make(map[int64]*api.Computer),
@@ -26,7 +26,7 @@ func (e *ElectronicsRepo) Computers() api.ComputerServiceServer {
 	return e.computers
 }
 
-func (e *ElectronicsRepo) Phones() api.PhoneServiceServer {
+func (e *Electronics) Phones() api.PhoneServiceServer {
 	if e.phones == nil{
 		e.phones = &PhoneRepo{
 			data: make(map[int64]*api.Phone),
