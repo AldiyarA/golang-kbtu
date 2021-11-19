@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Title struct {
 	Id int `json:"id" db:"id"`
@@ -10,4 +12,8 @@ type Title struct {
 	Final  time.Time `json:"final" db:"final"`
 	Status int       `json:"status" db:"status"`
 	Type int       `json:"type" db:"type"`
+}
+
+type TitleFilter struct {
+	Query *string `json:"query"`
 }

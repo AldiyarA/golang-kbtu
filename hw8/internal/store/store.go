@@ -16,7 +16,7 @@ type Store interface {
 
 type TitleRepository interface {
 	Create(ctx context.Context, category *models.Title) error
-	All(ctx context.Context) ([]*models.Title, error)
+	All(ctx context.Context, filter *models.TitleFilter) ([]*models.Title, error)
 	ByID(ctx context.Context, id int) (*models.Title, error)
 	Update(ctx context.Context, category *models.Title) error
 	Delete(ctx context.Context, id int) error

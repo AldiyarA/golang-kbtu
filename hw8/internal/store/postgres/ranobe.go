@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"hw8/internal/models"
 	"hw8/internal/store"
@@ -26,9 +27,18 @@ func (t* RanobeRepository) Create(ctx context.Context, category *models.Title) e
 	return nil
 }
 
-func (t* RanobeRepository) All(ctx context.Context) ([]*models.Title, error) {
+func (t* RanobeRepository) All(ctx context.Context, filter *models.TitleFilter) ([]*models.Title, error) {
 	titles := make([]*models.Title, 0)
-	if err := t.conn.Select(&titles, "SELECT * FROM ranobe"); err != nil {
+	basicQuery := "SELECT * FROM ranobe"
+	if filter.Query != nil {
+		basicQuery = fmt.Sprintf("%s WHERE name_english ILIKE $1", basicQuery)
+
+		if err := t.conn.Select(&titles, basicQuery, "%"+*filter.Query+"%"); err != nil {
+			return nil, err
+		}
+		return titles, nil
+	}
+	if err := t.conn.Select(&titles, basicQuery); err != nil {
 		return nil, err
 	}
 
