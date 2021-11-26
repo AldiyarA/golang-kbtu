@@ -15,7 +15,7 @@ type Server struct {
 	idleConnsCh chan struct{}
 	store       store.Store
 	//cache       *lru.TwoQueueCache
-	redis 		*redis.Client
+	//rdb *redis.Client
 
 	Address string
 }
@@ -35,9 +35,9 @@ func NewServer(ctx context.Context, opts ...ServerOption) *Server {
 
 func (s *Server) basicHandler() chi.Router {
 	r := chi.NewRouter()
-	ar := NewTitleResource(s.store.Anime(), s.redis)
-	mr := NewTitleResource(s.store.Manga(), s.redis)
-	rr := NewTitleResource(s.store.Ranobe(), s.redis)
+	ar := NewTitleResource(s.store.Anime(), s.rdb)
+	mr := NewMangaResource(s.store, s.rdb)
+	rr := NewTitleResource(s.store.Ranobe(), s.rdb)
 	r.Mount("/anime", ar.Routes())
 	r.Mount("/manga", mr.Routes())
 	r.Mount("/ranobe", rr.Routes())
@@ -72,3 +72,4 @@ func (s *Server) WaitForGracefulTermination() {
 	// блок до записи или закрытия канала
 	<-s.idleConnsCh
 }
+

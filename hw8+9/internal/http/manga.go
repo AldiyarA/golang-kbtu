@@ -10,35 +10,36 @@ import (
 	"github.com/go-redis/redis/v8"
 	"hw8/internal/models"
 	"hw8/internal/store"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-type TitleResource struct {
-	repo store.TitleRepository
+type MangaResource struct {
+	store store.Store
 	rdb *redis.Client
 }
 
-func NewTitleResource(repo store.TitleRepository, rdb *redis.Client) *TitleResource {
-	return &TitleResource{
-		repo: repo,
+func NewMangaResource(store store.Store, rdb *redis.Client) *MangaResource {
+	return &MangaResource{
+		store: store,
 		rdb: rdb,
 	}
 }
 
-func (tr *TitleResource) Routes() chi.Router {
+func (mr *MangaResource) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	r.Post("/", tr.CreateCategory)
-	r.Get("/", tr.AllCategories)
-	r.Get("/{id}", tr.ByID)
-	r.Put("/", tr.UpdateCategory)
-	r.Delete("/{id}", tr.DeleteCategory)
+	r.Post("/", mr.CreateManga)
+	r.Get("/", mr.AllManga)
+	r.Get("/{id}", mr.ByID)
+	r.Put("/", mr.UpdateManga)
+	r.Delete("/{id}", mr.DeleteManga)
 
 	return r
 }
 
-func (tr *TitleResource) CreateCategory(w http.ResponseWriter, r *http.Request) {
+func (mr *MangaResource) CreateManga(w http.ResponseWriter, r *http.Request) {
 	title := new(models.Title)
 	if err := json.NewDecoder(r.Body).Decode(title); err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -46,23 +47,24 @@ func (tr *TitleResource) CreateCategory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	fmt.Println(title)
-	if err := tr.repo.Create(r.Context(), title); err!=nil{
+	if err := mr.store.Manga().Create(r.Context(), title); err!=nil{
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "DB err: %v", err)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
 	render.JSON(w, r, "OK")
+	mr.UpdateCaches()
 }
 
-func (tr *TitleResource) AllCategories(w http.ResponseWriter, r *http.Request) {
+func (mr *MangaResource) AllManga(w http.ResponseWriter, r *http.Request) {
 	queryValues := r.URL.Query()
 	filter := &models.TitleFilter{}
 
 	searchQuery := queryValues.Get("query")
 	if searchQuery != "" {
-		titlesFromRDB, err := tr.rdb.Get(context.Background(), searchQuery).Result()
-		fmt.Printf("redis = %s\n", titlesFromRDB)
+		titlesFromRDB, err := mr.rdb.Get(context.Background(), "manga#"+searchQuery).Result()
+		fmt.Printf("rdb = %s\n", titlesFromRDB)
 		if err == nil {
 			titles := make([]*models.Title, 0)
 			err := json.Unmarshal([]byte(titlesFromRDB), &titles)
@@ -74,7 +76,7 @@ func (tr *TitleResource) AllCategories(w http.ResponseWriter, r *http.Request) {
 		}
 		filter.Query = &searchQuery
 	}
-	titles, err := tr.repo.All(r.Context(), filter)
+	titles, err := mr.store.Manga().All(r.Context(), filter)
 	if err != nil{
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Unknown err: %v", err)
@@ -83,12 +85,12 @@ func (tr *TitleResource) AllCategories(w http.ResponseWriter, r *http.Request) {
 	if searchQuery != "" {
 		fmt.Println(searchQuery)
 		titlesMarshal, _ := json.Marshal(titles)
-		tr.rdb.Set(context.Background(), searchQuery, titlesMarshal, 0)
+		mr.rdb.Set(context.Background(), "manga#"+searchQuery, titlesMarshal, 0)
 	}
 	render.JSON(w, r, titles)
 }
 
-func (tr *TitleResource) ByID(w http.ResponseWriter, r *http.Request) {
+func (mr *MangaResource) ByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -96,7 +98,7 @@ func (tr *TitleResource) ByID(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Unknown err: %v", err)
 		return
 	}
-	title, err := tr.repo.ByID(r.Context(), id)
+	title, err := mr.store.Manga().ByID(r.Context(), id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Unknown err: %v", err)
@@ -106,7 +108,7 @@ func (tr *TitleResource) ByID(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (tr *TitleResource) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (mr *MangaResource) UpdateManga(w http.ResponseWriter, r *http.Request) {
 	title := new(models.Title)
 	if err := json.NewDecoder(r.Body).Decode(title); err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -120,14 +122,15 @@ func (tr *TitleResource) UpdateCategory(w http.ResponseWriter, r *http.Request) 
 		fmt.Fprintf(w, "Unknown err: %v", err)
 		return
 	}
-	if err := tr.repo.Update(r.Context(), title); err != nil{
+	if err := mr.store.Manga().Update(r.Context(), title); err != nil{
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "DB err: %v", err)
 		return
 	}
 	render.JSON(w, r, "OK")
+	mr.UpdateCaches()
 }
-func (tr *TitleResource) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (mr *MangaResource) DeleteManga(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -135,10 +138,26 @@ func (tr *TitleResource) DeleteCategory(w http.ResponseWriter, r *http.Request) 
 		fmt.Fprintf(w, "Unknown err: %v", err)
 		return
 	}
-	if err := tr.repo.Delete(r.Context(), id); err != nil{
+	if err := mr.store.Manga().Delete(r.Context(), id); err != nil{
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "DB err: %v", err)
 		return
 	}
 	render.JSON(w, r, "OK")
+	mr.UpdateCaches()
+}
+
+func (mr *MangaResource) UpdateCaches () {
+	keys := mr.rdb.Keys(context.Background(), "manga#*").Val()
+	for _, keyVal := range keys{
+		key := keyVal[6:]
+		fmt.Println(key)
+		filter := &models.TitleFilter{Query: &key}
+		titles, err := mr.store.Manga().All(context.Background(), filter)
+		if err != nil {
+			log.Fatal(err)
+		}
+		titlesMarshal, _ := json.Marshal(titles)
+		mr.rdb.Set(context.Background(), keyVal, titlesMarshal, 0)
+	}
 }

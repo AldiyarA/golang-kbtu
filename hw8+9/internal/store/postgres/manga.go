@@ -55,7 +55,7 @@ func (t* MangaRepository) ByID(ctx context.Context, id int) (*models.Title, erro
 }
 
 func (t* MangaRepository) Update(ctx context.Context, title *models.Title) error {
-	_, err := t.conn.Exec("UPDATE manga SET name = $1, name_english = $2, release = $3, final = $4, status = $5, type = $7 WHERE id = $8", title.Name, title.NameEnglish, title.Release, title.Final, title.Status, title.Type, title.Id)
+	_, err := t.conn.Exec("UPDATE manga SET name = $1, name_english = $2, release = $3, final = $4, status = $5, type = $6 WHERE id = $7", title.Name, title.NameEnglish, title.Release, title.Final, title.Status, title.Type, title.Id)
 	if err != nil {
 		return err
 	}

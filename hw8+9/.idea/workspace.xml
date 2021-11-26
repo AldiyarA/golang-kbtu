@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ab647b7f-b57a-4695-a3c8-5aab00c3bb66" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../hw7/internal/http/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../hw7/internal/http/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hw7/internal/store/inmemory/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/../hw7/internal/store/inmemory/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hw7/internal/store/store.go" beforeDir="false" afterPath="$PROJECT_DIR$/../hw7/internal/store/store.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/hw8.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/db-connect/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/simple/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/with-storage/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/server_opts.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http/server_opts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/title.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http/title.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/postgres/anime.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/postgres/anime.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/postgres/manga.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/postgres/manga.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/postgres/ranobe.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/postgres/ranobe.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="21NYvdAwJ6jceT0424MKadIu7oE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+</project>

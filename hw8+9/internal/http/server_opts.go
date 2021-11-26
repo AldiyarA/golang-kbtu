@@ -19,13 +19,8 @@ func WithStore(store store.Store) ServerOption {
 	}
 }
 
-//func WithCache(cache *lru.TwoQueueCache) ServerOption {
-//	return func(srv *Server) {
-//		srv.cache = cache
-//	}
-//}
 func WithRedis(redis *redis.Client) ServerOption {
 	return func(srv *Server) {
-		srv.redis = redis
+		srv.rdb = redis
 	}
 }
